@@ -122,6 +122,20 @@ fastify.post('/upload', async (request, reply) => {
     return reply.view("/src/pages/success.hbs");
 });
 
+//Download File Path
+fastify.get('/download/file', async (request, reply) => {
+    const filename = request.params.filename;
+    const filePath = path.join(__dirname, 'uploads', "ATT.csv");
+
+    // Process the CSV file (for example, read its contents)
+    const processedCsv = fs.readFileSync(filePath, 'utf8');
+
+    // Send the processed CSV file back
+    reply.header('Content-Type', 'text/csv');
+    reply.header('Content-Disposition', `attachment; filename="${filename}"`);
+    return processedCsv;
+});
+
 // Home route
 fastify.get('/', (req, reply) => {
     reply.view("/src/pages/index.hbs");
