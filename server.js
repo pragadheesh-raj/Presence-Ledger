@@ -29,18 +29,15 @@ fastify.register(require("@fastify/view"), {
   },
 });
 
+fastify.register(require('fastify-multipart'));
+
 // Load and parse SEO data
-const seo = require("./src/seo.json");
+/*const seo = require("./src/seo.json");
 if (seo.url === "glitch-default") {
   seo.url = `https://${process.env.PROJECT_DOMAIN}.glitch.me`;
 }
 
-/**
- * Our home page route
- *
- * Returns src/pages/index.hbs with data built into it
- */
-fastify.get("/", function (request, reply) {
+/*fastify.get("/", function (request, reply) {
   // params is an object we'll pass to our handlebars template
   let params = { seo: seo };
 
@@ -63,11 +60,7 @@ fastify.get("/", function (request, reply) {
   return reply.view("/src/pages/index.hbs", params);
 });
 
-/**
- * Our POST route to handle and react to form submissions
- *
- * Accepts body data indicating the user choice
- */
+
 fastify.post("/", function (request, reply) {
   // Build the params object to pass to the template
   let params = { seo: seo };
@@ -104,6 +97,19 @@ fastify.post("/", function (request, reply) {
 
   // The Handlebars template will use the parameter values to update the page with the chosen color
   return reply.view("/src/pages/index.hbs", params);
+});*/
+
+fastify.post('/upload', async (request, reply) => {
+    const data = await request.file();
+    const filePath = path.join(__dirname, 'uploads', data.filename);
+    await data.toFile(filePath);
+
+    reply.send({ message: 'File uploaded successfully', path: filePath });
+});
+
+// Home route
+fastify.get('/', (req, reply) => {
+    reply.view("/src/pages/index.hbs");
 });
 
 // Run the server and report out to the logs
