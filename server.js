@@ -4,7 +4,9 @@
  */
 
 const path = require("path");
-
+const util = require('util');
+const pump = util.promisify(require('stream').pipeline);
+const fs = require('fs');
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
   // Set this to true for detailed logging:
@@ -101,10 +103,11 @@ fastify.post("/", function (request, reply) {
 
 fastify.post('/upload', async (request, reply) => {
     const data = await request.file();
-    const filePath = path.join(__dirname, 'uploads', data.filename);
-    await data.toFile(filePath);
-
-    reply.send({ message: 'File uploaded successfully', path: filePath });
+    const filename = path.join(__dirname, 'uploads', 'ATT.csv');//await data.toFile(filePath);
+    await pump(data.file, fs.createWriteStream(filename));
+    
+    console.log(data);
+    reply.send({ message: 'File uploaded successfully', path: filename });
 });
 
 // Home route

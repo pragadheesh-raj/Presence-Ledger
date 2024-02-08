@@ -94,7 +94,12 @@
                  it'll be passed to the server in the request body  -->
             <button type="submit">Submit</button>
           </form>
-          
+        <h1>Upload CSV File</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".csv">
+            <button type="submit">Upload</button>
+        </form>
+
           <!-- This randomize link communicates with the server (server.js) 
                using a querystring and GET request instead of a form POST -->
           Can't decide? <a href="?randomize=go">Use a random color!</a>
