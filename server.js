@@ -106,7 +106,6 @@ fastify.post('/upload', async (request, reply) => {
     const data = await request.file();
     const filePath = path.join(__dirname, 'uploads', "ATT.csv");
     // Ensure 'uploads' directory exists
-  console.log(filePath)
     if (!fs.existsSync(path.dirname(filePath))) {
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
     }
@@ -127,14 +126,15 @@ fastify.post('/upload', async (request, reply) => {
 //Download File Path
 fastify.get('/download/file', async (request, reply) => {
     const filename = request.params.filename;
-    const filePath = path.join(__dirname, 'uploads', "Calc.csv");
-
+    const filePath = path.join(__dirname, 'uploads', "ATT.csv");
+    
+    console.log(processAtt(filePath));
     // Process the CSV file (for example, read its contents)
     const processedCsv = fs.readFileSync(filePath, 'utf8');
 
     // Send the processed CSV file back
     reply.header('Content-Type', 'text/csv');
-    reply.header('Content-Disposition', `attachment; filename="${filename}"`);
+    reply.header('Content-Disposition', 'attachment; filename="Calculated.csv"');
     return processedCsv;
 });
 
