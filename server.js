@@ -103,11 +103,23 @@ fastify.post("/", function (request, reply) {
 
 fastify.post('/upload', async (request, reply) => {
     const data = await request.file();
-    const filename = path.join(__dirname, 'uploads', 'ATT.csv');//await data.toFile(filePath);
-    await pump(data.file, fs.createWriteStream(filename));
+    const filePath = path.join(__dirname, 'uploads', "ATT.csv");
+    // Ensure 'uploads' directory exists
+    if (!fs.existsSync(path.dirname(filePath))) {
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    }
+    // Save the file to the specified path
+    await pump(data.file, fs.createWriteStream(filePath));
     
-    console.log(data);
-    reply.send({ message: 'File uploaded successfully', path: filename });
+    fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+        console.error('Error reading the file:', err);
+        return;
+    }
+      console.log('File content:', data);
+    });
+    
+    reply.send({ message: 'File uploaded successfully' });
 });
 
 // Home route
