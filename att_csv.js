@@ -153,8 +153,8 @@ var obj = {}
       console.log(temp) 
     })
     .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));*/
-
-fs.createReadStream('JAN-ATT.csv')
+function processAtt(fileName){
+  fs.createReadStream(fileName)
     //.pipe(csv.parse({ headers: [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,18,19,undefined,21,22,23,24,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined] }))
     //.pipe(csv.parse({ headers: ['Date', 'Employee Code' ,'Employee Name','Company' ,'Department','Category' ,'Degination','Grade','Team','Shift', 'In Time' ,'Out Time' , 'Duration' ,'Late By' ,'Early By' ,'Status' ,'Punch Records' ,'Overtime'] }))
     .pipe(csv.parse({ headers: true }))
@@ -177,7 +177,8 @@ fs.createReadStream('JAN-ATT.csv')
         att_calc();
         //console.log(jsonArray)
         console.log(`Parsed ${rowCount} rows`)
-    });
+    });  
+}
 
 const att_calc = () => {
     var total_days = compareDates(start_date, end_date);
@@ -219,7 +220,7 @@ const att_calc = () => {
 } 
 
 const writeToFile = (obj) => {
-    var file = fs.createWriteStream('calculated.csv');
+    var file = fs.createWriteStream('/app/uploads/Calc.csv');
     file.on('error', function(err) { });
     //file.write("EId,Day,Date,Log In,Log Out,Lunch In,Lunch Out,Total Hours\n");
     file.write("EId,Day,Date,Log In,Late Hours,Log Out,Total Hours, Total Days,OT Hours,Tiffen Cost\n");
@@ -435,6 +436,8 @@ const formatTime = (hours)=>{
 const convertObj = (array) =>{
 
 }
+
+module.exports = processAtt;
 /*//-----------TO-DOs---------------------------------------------//
 * Add Late Hours Calculation
 * Add Permission Hours Calculation

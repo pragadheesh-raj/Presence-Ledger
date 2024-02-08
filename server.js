@@ -7,6 +7,7 @@ const path = require("path");
 const util = require('util');
 const pump = util.promisify(require('stream').pipeline);
 const fs = require('fs');
+const processAtt = require('./att_csv.js')
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
   // Set this to true for detailed logging:
@@ -105,6 +106,7 @@ fastify.post('/upload', async (request, reply) => {
     const data = await request.file();
     const filePath = path.join(__dirname, 'uploads', "ATT.csv");
     // Ensure 'uploads' directory exists
+  console.log(filePath)
     if (!fs.existsSync(path.dirname(filePath))) {
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
     }
@@ -125,7 +127,7 @@ fastify.post('/upload', async (request, reply) => {
 //Download File Path
 fastify.get('/download/file', async (request, reply) => {
     const filename = request.params.filename;
-    const filePath = path.join(__dirname, 'uploads', "ATT.csv");
+    const filePath = path.join(__dirname, 'uploads', "Calc.csv");
 
     // Process the CSV file (for example, read its contents)
     const processedCsv = fs.readFileSync(filePath, 'utf8');
