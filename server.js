@@ -111,15 +111,15 @@ fastify.post('/upload', async (request, reply) => {
     // Save the file to the specified path
     await pump(data.file, fs.createWriteStream(filePath));
     
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    /*fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
         console.error('Error reading the file:', err);
         return;
     }
       console.log('File content:', data);
-    });
+    });*/
     
-    reply.send({ message: 'File uploaded successfully' });
+    return reply.view("/src/pages/success.hbs");
 });
 
 // Home route
