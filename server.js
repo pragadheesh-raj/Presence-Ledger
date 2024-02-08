@@ -11,6 +11,8 @@ const fastify = require("fastify")({
   logger: false,
 });
 
+// ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
+
 // Setup our static files
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "public"),
