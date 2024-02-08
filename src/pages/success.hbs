@@ -43,11 +43,27 @@
       <div class="content" role="main">
         
         <!-- This is the start of content for our page -->
-        <h1 class="title">File Upload Successful</h1>
-        <h3> <a href="https://certain-sleet-amphibian.glitch.me/download/file">Download</a> the file here </h3>
+        <h2 class="title">File Upload Successful</h2>
+        <h2> <a href="https://certain-sleet-amphibian.glitch.me/download/file">Download</a> the file here </h2>
 
         <div class="illo-container">
           <img src="https://cdn.glitch.com/c62efef6-1e75-45cf-b248-afeccdda9477%2Fillustration.svg?v=1618196069568" class="illustration" alt="Node logo" />
+        </div>
+         <div class="color-form">
+          
+        <h1>Attendance Processor</h1>
+           <p>
+              Upload the extracted file in CSV format only
+            </p>
+           
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".csv">
+            <button type="submit">Upload</button>
+        </form>
+
+          <!-- This randomize link communicates with the server (server.js) 
+               using a querystring and GET request instead of a form POST -->
+          Use only .csv format file 
         </div>
         
       </div>

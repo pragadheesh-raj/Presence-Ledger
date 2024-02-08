@@ -7,7 +7,11 @@ const path = require("path");
 const util = require('util');
 const pump = util.promisify(require('stream').pipeline);
 const fs = require('fs');
-const processAtt = require('./att_csv.js')
+const csvToJson = require('convert-csv-to-json');
+const date = require('date-and-time');
+const csv = require('fast-csv');
+const emp_data = require('./e_data.json');
+
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
   // Set this to true for detailed logging:
@@ -112,24 +116,34 @@ fastify.post('/upload', async (request, reply) => {
     // Save the file to the specified path
     await pump(data.file, fs.createWriteStream(filePath));
     
-    /*fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-        console.error('Error reading the file:', err);
-        return;
-    }
-      console.log('File content:', data);
-    });*/
-    
-    return reply.view("/src/pages/success.hbs");
+    await fs.createReadStream(filePath)
+    .pipe(csv.parse({ headers: true }))
+    .on('error', error => console.error(error))
+    .on('data', row => {
+      var temp = {'18':'','19':'','21':'','22':'','23':'','24':''};
+      temp['18'] = row[' Employee Code ']
+      temp['19'] = row['Employee Name']
+      temp['21'] = row['Category ']
+      temp['22'] = row['Date']
+      temp['23'] = row[' In Time '] != undefined ? (row[' In Time '].split(':').map(part => part.length === 1 ? '0' + part : part).join(':')):'';
+      temp['24'] = row['Out Time ']!= undefined ? (row['Out Time '].split(':').map(part => part.length === 1 ? '0' + part : part).join(':')):'';
+      jsonArray.push(temp)
+    })
+    .on('end', rowCount => {
+        start_date = jsonArray[0]['22'];
+        end_date = jsonArray[jsonArray.length - 1]['22'];
+        att_calc();
+        console.log(`Parsed ${rowCount} rows`)
+    });
+  
+  return reply.view("/src/pages/success.hbs");
 });
 
 //Download File Path
 fastify.get('/download/file', async (request, reply) => {
     const filename = request.params.filename;
-    const filePath = path.join(__dirname, 'uploads', "ATT.csv");
+    const filePath = path.join(__dirname, 'uploads', "Calc.csv");
     
-    console.log(processAtt(filePath));
-    // Process the CSV file (for example, read its contents)
     const processedCsv = fs.readFileSync(filePath, 'utf8');
 
     // Send the processed CSV file back
@@ -142,15 +156,6 @@ fastify.get('/download/file', async (request, reply) => {
 fastify.get('/', (req, reply) => {
     reply.view("/src/pages/index.hbs");
 });
-
-
-
-const csvToJson = require('convert-csv-to-json');
-const fs = require('fs');
-const date = require('date-and-time');
-const csv = require('fast-csv');
-const emp_data = require('./e_data.json');
-//const csv = require('csvtojson');
 
 const commaSeparate = (text) => {
   return text.replace(/\s/g, ",") + "\n";
@@ -269,63 +274,6 @@ var end_date = '';
 var jsonArray = [];
 var obj = {}
 
-/*csv()
-    .fromFile('ATT-AUG.csv')
-    .then((jsonObj) => {
-      console.log(jsonObj[0])
-        // Writing JSON array to file
-        fs.writeFile(jsonFilePath, JSON.stringify(jsonObj, null, 4), (err) => {
-            if (err) {
-                console.error('An error occurred:', err);
-                return;
-            }
-            console.log('CSV file successfully converted to JSON and saved to', jsonFilePath);
-        });
-    })
-    .catch((error) => {
-        console.error('Error converting CSV to JSON:', error);
-    });*/
-
-/*fs.createReadStream('JAN-ATT.csv')
-    .pipe(csv.parse({ headers: true }))
-    .on('error', error => console.error(error))
-    .on('data', row => { 
-      var temp = {'18':'','19':'','21':'','22':'','23':'','24':''};
-      temp['18'] = row[' Employee Code ']
-      temp['19'] = row['Employee Name']
-      temp['21'] = row['Category ']
-      temp['22'] = row['Date']
-      temp['23'] = row[' In Time ']
-      temp['24'] = row['Out Time ']
-      console.log(temp) 
-    })
-    .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));*/
-function processAtt(fileName){
-  fs.createReadStream(fileName)
-    //.pipe(csv.parse({ headers: [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,18,19,undefined,21,22,23,24,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined] }))
-    //.pipe(csv.parse({ headers: ['Date', 'Employee Code' ,'Employee Name','Company' ,'Department','Category' ,'Degination','Grade','Team','Shift', 'In Time' ,'Out Time' , 'Duration' ,'Late By' ,'Early By' ,'Status' ,'Punch Records' ,'Overtime'] }))
-    .pipe(csv.parse({ headers: true }))
-    .on('error', error => console.error(error))
-    //.on('data', row => jsonArray.push(row))
-    .on('data', row => {
-      var temp = {'18':'','19':'','21':'','22':'','23':'','24':''};
-      temp['18'] = row[' Employee Code ']
-      temp['19'] = row['Employee Name']
-      temp['21'] = row['Category ']
-      temp['22'] = row['Date']
-      temp['23'] = row[' In Time '] != undefined ? (row[' In Time '].split(':').map(part => part.length === 1 ? '0' + part : part).join(':')):'';
-      temp['24'] = row['Out Time ']!= undefined ? (row['Out Time '].split(':').map(part => part.length === 1 ? '0' + part : part).join(':')):'';
-      jsonArray.push(temp)
-    })
-    .on('end', rowCount => {
-
-        start_date = jsonArray[0]['22'];
-        end_date = jsonArray[jsonArray.length - 1]['22'];
-        att_calc();
-        //console.log(jsonArray)
-        console.log(`Parsed ${rowCount} rows`)
-    });  
-}
 
 const att_calc = () => {
     var total_days = compareDates(start_date, end_date);
@@ -402,25 +350,8 @@ const writeToFile = (obj) => {
       console.log("File Write Completed");
     })
   }
-  
-/*Shift Timings
-8.30 - Morning Punch-in
-5.20 - Evening Punch-out
 
-7.20 - Ladies First Shoft OT
-
-8.20 - First Shift OT
-11.20 - Second Shift OT
-6.20 - Third Shift OT
-*/
 const getEmployee = (code) =>{
-  /*emp_data.filter(function(data) {
-    if(parseInt(data.e_code) == code){
-      return data
-     }  
-    }
-  )*/
-  //array.find(obj => obj.name === 'John');
   return emp_data.find(obj => parseInt(obj.e_code) == code);
 }
 //data.find(item => item.field === 'match')
