@@ -80,33 +80,13 @@
     "g": "MALE"
   },
   {
-    "e_name": "SAR GURU.S",
-    "e_code": "0769",
-    "g": "MALE"
-  },
-  {
-    "e_name": "MADHESH.K",
-    "e_code": "0782",
-    "g": "MALE"
-  },
-  {
     "e_name": "SARAN.M",
     "e_code": "0786",
     "g": "MALE"
   },
   {
-    "e_name": "NISHANTH.A",
-    "e_code": "0792",
-    "g": "MALE"
-  },
-  {
     "e_name": "MUTHUKUMAR.M",
     "e_code": "0802",
-    "g": "MALE"
-  },
-  {
-    "e_name": "KARTHIKEYAN.G",
-    "e_code": "0803",
     "g": "MALE"
   },
   {
@@ -202,11 +182,6 @@
   {
     "e_name": "KALINGARAJ.S",
     "e_code": "0577",
-    "g": "MALE"
-  },
-  {
-    "e_name": "SAKTHIVEL.R",
-    "e_code": "0768",
     "g": "MALE"
   },
   {
@@ -467,11 +442,6 @@
   {
     "e_name": "GOMATHI.M",
     "e_code": "0736",
-    "g": "FEMALE"
-  },
-  {
-    "e_name": "MAHESWARI.C",
-    "e_code": "0737",
     "g": "FEMALE"
   },
   {
@@ -757,11 +727,6 @@
   {
     "e_name": "MADHAN KUMAR.V",
     "e_code": "0740",
-    "g": "MALE"
-  },
-  {
-    "e_name": "MANI KANDEN.R",
-    "e_code": "0781",
     "g": "MALE"
   },
   {
