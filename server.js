@@ -141,10 +141,13 @@ fastify.get('/list', (request, reply) => {
   try {
     employeeList = JSON.parse(fs.readFileSync(empPath, 'utf8'));
 
-    // Sort by e_code numerically
-    employeeList.sort((a, b) => {
-      return parseInt(a.e_code) - parseInt(b.e_code);
-    });
+    // Normalize and sort by numeric e_code
+    employeeList = employeeList.map(emp => ({
+      ...emp,
+      e_code: String(parseInt(emp.e_code)) // removes leading zeros
+    }));
+
+    employeeList.sort((a, b) => parseInt(a.e_code) - parseInt(b.e_code));
 
   } catch (err) {
     console.error('Error reading employee data:', err);
