@@ -157,6 +157,11 @@ fastify.get('/', (req, reply) => {
     reply.view("/src/pages/index.hbs");
 });
 
+fastify.get('/add', (req, reply) => {
+  reply.view('/src/pages/add.hbs');
+});
+
+
 const commaSeparate = (text) => {
   return text.replace(/\s/g, ",") + "\n";
 };
@@ -510,28 +515,6 @@ const formatTime = (hours)=>{
   var formattedTime = wholeHours + ":" + minutes.toString().padStart(2, "0"); // Format the time as "hours:minutes"
   return formattedTime;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Run the server and report out to the logs
 fastify.listen(
