@@ -134,6 +134,74 @@ fastify.post('/add-employee', async (request, reply) => {
   }
 });
 
+fastify.get('/list', (request, reply) => {
+  const empPath = path.join(__dirname, 'e_data.json');
+  let employeeList = [];
+
+  try {
+    employeeList = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+
+    // Sort by e_code numerically
+    employeeList.sort((a, b) => {
+      return parseInt(a.e_code) - parseInt(b.e_code);
+    });
+
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+  }
+
+  return reply.view('/src/pages/list.hbs', {
+    employees: employeeList
+  });
+});
+
+
+fastify.get('/remove', (request, reply) => {
+  reply.view('/src/pages/remove.hbs');
+});
+
+fastify.post('/remove-employee', async (request, reply) => {
+  const { e_code } = request.body;
+
+  if (!e_code) {
+    return reply.view('/src/pages/remove.hbs', {
+      error: "Employee Code is required."
+    });
+  }
+
+  const empPath = path.join(__dirname, 'e_data.json');
+  let employees = [];
+
+  try {
+    employees = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+    return reply.view('/src/pages/remove.hbs', {
+      error: "Unable to read employee data."
+    });
+  }
+
+  const originalLength = employees.length;
+  employees = employees.filter(emp => String(emp.e_code).trim() !== String(e_code).trim());
+
+  if (employees.length === originalLength) {
+    return reply.view('/src/pages/remove.hbs', {
+      error: `No employee found with code ${e_code}.`
+    });
+  }
+
+  try {
+    fs.writeFileSync(empPath, JSON.stringify(employees, null, 2));
+    return reply.view('/src/pages/remove.hbs', {
+      success: `Employee with code ${e_code} removed successfully.`
+    });
+  } catch (err) {
+    console.error('Error writing updated employee data:', err);
+    return reply.view('/src/pages/remove.hbs', {
+      error: "Failed to update employee data."
+    });
+  }
+});
 
 const commaSeparate = (text) => {
   return text.replace(/\s/g, ",") + "\n";

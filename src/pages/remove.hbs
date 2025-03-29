@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Remove Employee</title>
+
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Remove an employee from the system.">
+    <meta property="og:title" content="Remove Employee">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary">
+
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="content" role="main">
+
+        <div class="color-form">
+          <h1>❌ Remove Employee</h1>
+          <p>Enter the Employee Code of the employee to remove.</p>
+
+          {{#if error}}
+            <p style="color: red;"><strong>Error:</strong> {{error}}</p>
+          {{/if}}
+
+          {{#if success}}
+            <p style="color: green;"><strong>Success:</strong> {{success}}</p>
+          {{/if}}
+
+          <form action="/remove-employee" method="POST">
+            <label for="e_code">Employee Code:</label><br>
+            <input type="text" name="e_code" id="e_code" required><br><br>
+
+            <button type="submit">🗑️ Remove Employee</button>
+          </form>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button style="border-radius: 40px;">
+            <a href="/" style="text-decoration: none; color: inherit;">🏠 Back to Home</a>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="links"></div>
+    </footer>
+  </body>
+</html>

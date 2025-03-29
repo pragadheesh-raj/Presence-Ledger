@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Employee List</title>
+
+    <meta name="description" content="List of all employees.">
+    <meta property="og:title" content="Employee List">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="#">
+    <meta property="og:description" content="All registered employees.">
+    <meta name="twitter:card" content="summary">
+
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th, td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+      }
+      th {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="content" role="main">
+        <div class="color-form">
+          <h1>👥 Employee List</h1>
+          {{#if employees.length}}
+          <table>
+            <thead>
+              <tr>
+                <th>Employee Code</th>
+                <th>Name</th>
+                <th>Gender</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each employees}}
+                <tr>
+                  <td>{{this.e_code}}</td>
+                  <td>{{this.e_name}}</td>
+                  <td>{{this.g}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          {{else}}
+            <p>No employees found.</p>
+          {{/if}}
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button style="border-radius: 40px;">
+            <a href="/" style="text-decoration: none; color: inherit;">🏠 Back to Home</a>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="links"></div>
+    </footer>
+  </body>
+</html>
