@@ -1095,11 +1095,6 @@
     "g": "MALE"
   },
   {
-    "e_code": "846",
-    "e_name": "BHAVANA .M",
-    "g": "FEMALE"
-  },
-  {
     "e_code": "554",
     "e_name": "TAMIL SELVI .K",
     "g": "FEMALE"
@@ -1128,5 +1123,10 @@
     "e_code": "834",
     "e_name": "RADHAMANI .S",
     "g": "FEMALE"
+  },
+  {
+    "e_code": "846",
+    "e_name": "PALANISAMY . R",
+    "g": "MALE"
   }
 ]
