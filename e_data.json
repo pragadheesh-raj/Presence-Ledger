@@ -1090,11 +1090,6 @@
     "g": "FEMALE"
   },
   {
-    "e_code": "845",
-    "e_name": "GOBI.K",
-    "g": "MALE"
-  },
-  {
     "e_code": "554",
     "e_name": "TAMIL SELVI .K",
     "g": "FEMALE"
@@ -1127,6 +1122,11 @@
   {
     "e_code": "846",
     "e_name": "PALANISAMY . R",
+    "g": "MALE"
+  },
+  {
+    "e_code": "845",
+    "e_name": "MARISELVAM. R",
     "g": "MALE"
   }
 ]
