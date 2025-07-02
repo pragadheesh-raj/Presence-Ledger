@@ -970,11 +970,6 @@
     "g": "FEMALE"
   },
   {
-    "e_name": "JOTHIMANI.K",
-    "e_code": "826",
-    "g": "FEMALE"
-  },
-  {
     "e_name": "DHANLAKSHMI.B",
     "e_code": "828",
     "g": "FEMALE"
@@ -1070,11 +1065,6 @@
     "g": "FEMALE"
   },
   {
-    "e_code": "841",
-    "e_name": "THILIP .T",
-    "g": "MALE"
-  },
-  {
     "e_code": "842",
     "e_name": "PRIYA .P",
     "g": "FEMALE"
@@ -1127,6 +1117,21 @@
   {
     "e_code": "845",
     "e_name": "MARISELVAM. R",
+    "g": "MALE"
+  },
+  {
+    "e_code": "841",
+    "e_name": "SATHISH KUMAR. P",
+    "g": "MALE"
+  },
+  {
+    "e_code": "826",
+    "e_name": "PRABU.T -SECURITY",
+    "g": "MALE"
+  },
+  {
+    "e_code": "847",
+    "e_name": "NATARAJAN .K SECURITY",
     "g": "MALE"
   }
 ]
