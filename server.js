@@ -93,6 +93,105 @@ fastify.get('/add', (req, reply) => {
   reply.view('/src/pages/add.hbs');
 });
 
+fastify.get('/modify', async (request, reply) => {
+  return reply.view("/src/pages/modify.hbs");
+});
+
+fastify.post('/find-employee', async (request, reply) => {
+  const { e_code } = request.body;
+
+  if (!e_code) {
+    return reply.view("/src/pages/modify.hbs", {
+      error: "Employee code is required."
+    });
+  }
+
+  const empPath = path.join(__dirname, 'e_data.json');
+  let currentData = [];
+
+  try {
+    currentData = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+    return reply.view("/src/pages/modify.hbs", {
+      error: "Failed to read employee data."
+    });
+  }
+
+  const employee = currentData.find(
+    emp => String(emp.e_code).trim() === String(e_code).trim()
+  );
+
+  if (!employee) {
+    return reply.view("/src/pages/modify.hbs", {
+      error: `Employee code ${e_code} not found.`
+    });
+  }
+
+  return reply.view("/src/pages/modify.hbs", {
+    found: true,
+    e_code: employee.e_code,
+    current_name: employee.e_name,
+    current_gender: employee.g,
+    isMale: String(employee.g).trim().toUpperCase() === 'MALE',
+    isFemale: String(employee.g).trim().toUpperCase() === 'FEMALE'
+  });
+});
+
+fastify.post('/modify-employee', async (request, reply) => {
+  const { e_code, new_name, g } = request.body;
+
+  if (!e_code || !new_name || !g) {
+    return reply.view("/src/pages/modify.hbs", {
+      error: "Employee code, name, and gender are required."
+    });
+  }
+
+  const empPath = path.join(__dirname, 'e_data.json');
+  let currentData = [];
+
+  try {
+    currentData = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+    return reply.view("/src/pages/modify.hbs", {
+      error: "Failed to read employee data."
+    });
+  }
+
+  const employeeIndex = currentData.findIndex(
+    emp => String(emp.e_code).trim() === String(e_code).trim()
+  );
+
+  if (employeeIndex === -1) {
+    return reply.view("/src/pages/modify.hbs", {
+      error: `Employee code ${e_code} not found.`
+    });
+  }
+
+  currentData[employeeIndex].e_name = new_name.trim();
+  currentData[employeeIndex].g = g.trim().toUpperCase();
+
+  try {
+    fs.writeFileSync(empPath, JSON.stringify(currentData, null, 2));
+
+    return reply.view("/src/pages/modify.hbs", {
+      success: "Employee updated successfully!",
+      found: true,
+      e_code: currentData[employeeIndex].e_code,
+      current_name: currentData[employeeIndex].e_name,
+      current_gender: currentData[employeeIndex].g,
+      isMale: currentData[employeeIndex].g === 'MALE',
+      isFemale: currentData[employeeIndex].g === 'FEMALE'
+    });
+  } catch (err) {
+    console.error('Error writing employee data:', err);
+    return reply.view("/src/pages/modify.hbs", {
+      error: "Failed to update employee."
+    });
+  }
+});
+
 fastify.post('/add-employee', async (request, reply) => {
   const { e_code, e_name, g } = request.body;
 
@@ -364,7 +463,7 @@ const att_calc = () => {
 } 
 
 const writeToFile = (obj) => {
-    var file = fs.createWriteStream('/app/uploads/Calc.csv');
+    var file = fs.createWriteStream('./uploads/Calc.csv');
     file.on('error', function(err) { });
     //file.write("EId,Day,Date,Log In,Log Out,Lunch In,Lunch Out,Total Hours\n");
     file.write("EId,Day,Date,Log In,Late Hours,Log Out,Total Hours, Total Days,OT Hours,Tiffen Cost\n");
