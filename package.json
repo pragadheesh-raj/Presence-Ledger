@@ -7,16 +7,16 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^4.21.0",
-    "handlebars": "^4.7.8",
     "@fastify/formbody": "^7.4.0",
+    "@fastify/multipart": "^8.1.0",
     "@fastify/static": "^6.10.2",
     "@fastify/view": "^8.0.0",
-    "@fastify/multipart": "^8.1.0",
-    "util": "^0.12.5",
-    "convert-csv-to-json": "^2.0.0",
+    "convert-csv-to-json": "^2.50.0",
     "date-and-time": "^3.1.1",
-    "fast-csv": "^5.0.0"
+    "fast-csv": "^5.0.0",
+    "fastify": "^4.21.0",
+    "handlebars": "^4.7.8",
+    "util": "^0.12.5"
   },
   "engines": {
     "node": "14.x"
