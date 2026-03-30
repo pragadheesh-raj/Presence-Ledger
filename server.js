@@ -319,22 +319,13 @@ fastify.get('/list', (request, reply) => {
 });
 
 fastify.get('/download/e-data', async (request, reply) => {
-  try {
-    const filePath = path.join(__dirname, 'e_data.json');
+  const filePath = path.join(__dirname, 'e_data.json');
 
-    if (!fs.existsSync(filePath)) {
-      return reply.code(404).send('e_data.json not found');
-    }
-
-    return reply
-      .header('Content-Type', 'application/json')
-      .header('Content-Disposition', 'attachment; filename="e_data.json"')
-      .send(fs.createReadStream(filePath));
-
-  } catch (err) {
-    console.error('Error downloading e_data.json:', err);
-    return reply.code(500).send('Failed to download file');
+  if (!fs.existsSync(filePath)) {
+    return reply.code(404).send('File not found');
   }
+
+  return reply.download(filePath, 'e_data.json');
 });
 
 fastify.get('/remove', (request, reply) => {
