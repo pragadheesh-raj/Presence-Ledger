@@ -10,7 +10,7 @@ const fs = require('fs');
 const csvToJson = require('convert-csv-to-json');
 const date = require('date-and-time');
 const csv = require('fast-csv');
-const emp_data = require('./e_data.json');
+//const emp_data = require('./e_data.json');
 
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
@@ -499,9 +499,21 @@ const writeToFile = (obj) => {
     })
   }
 
-const getEmployee = (code) =>{
+/*const getEmployee = (code) =>{
   return emp_data.find(obj => parseInt(obj.e_code) == code);
-}
+}*/
+
+const getEmployee = (code) => {
+  try {
+    const empPath = path.join(__dirname, 'e_data.json');
+    const empData = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+    return empData.find(obj => parseInt(obj.e_code) == parseInt(code));
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+    return undefined;
+  }
+};
+
 //data.find(item => item.field === 'match')
 const calculateHours = (time1, time2) =>{
   var t_1 = date.transform(time1, 'HH:mm', 'hh:mm:ss A');
