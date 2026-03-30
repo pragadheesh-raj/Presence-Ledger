@@ -121,10 +121,11 @@ fastify.post('/upload', async (request, reply) => {
         start_date = jsonArray[0]['22'];
         end_date = jsonArray[jsonArray.length - 1]['22'];
 
-        att_calc(resolve);
-
         console.log(`Parsed ${rowCount} rows`);
-        resolve();
+        att_calc((err) => {
+          if (err) return reject(err);
+            resolve();
+          });
       });
   });
 
@@ -483,7 +484,7 @@ var jsonArray = [];
 var obj = {}
 
 
-const att_calc = () => {
+const att_calc = (done) => {
     var total_days = compareDates(start_date, end_date);
     var obj = {};
 
