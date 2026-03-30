@@ -2,7 +2,8 @@ const csvToJson = require('convert-csv-to-json');
 const fs = require('fs');
 const date = require('date-and-time');
 const csv = require('fast-csv');
-const emp_data = require('./e_data.json');
+const path = require('path');
+//const emp_data = require('./e_data.json');
 //const csv = require('csvtojson');
 
 const commaSeparate = (text) => {
@@ -266,7 +267,7 @@ const writeToFile = (obj) => {
 11.20 - Second Shift OT
 6.20 - Third Shift OT
 */
-const getEmployee = (code) =>{
+/*const getEmployee = (code) =>{
   /*emp_data.filter(function(data) {
     if(parseInt(data.e_code) == code){
       return data
@@ -274,8 +275,20 @@ const getEmployee = (code) =>{
     }
   )*/
   //array.find(obj => obj.name === 'John');
-  return emp_data.find(obj => parseInt(obj.e_code) == code);
-}
+  //return emp_data.find(obj => parseInt(obj.e_code) == code);
+//}*/
+
+const getEmployee = (code) => {
+  try {
+    const empPath = path.join(__dirname, 'e_data.json');
+    const empData = JSON.parse(fs.readFileSync(empPath, 'utf8'));
+    return empData.find(obj => parseInt(obj.e_code) == parseInt(code));
+  } catch (err) {
+    console.error('Error reading employee data:', err);
+    return undefined;
+  }
+};
+
 //data.find(item => item.field === 'match')
 const calculateHours = (time1, time2) =>{
   var t_1 = date.transform(time1, 'HH:mm', 'hh:mm:ss A');
