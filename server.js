@@ -39,12 +39,17 @@ fastify.register(require("@fastify/view"), {
 fastify.register(require('@fastify/multipart'));
 
 fastify.post('/upload', async (request, reply) => {
+  jsonArray = [];
+  start_date = '';
+  end_date = '';
+
     const data = await request.file();
     const filePath = path.join(__dirname, 'uploads', "ATT.csv");
     // Ensure 'uploads' directory exists
     if (!fs.existsSync(path.dirname(filePath))) {
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
     }
+
     // Save the file to the specified path
     await pump(data.file, fs.createWriteStream(filePath));
     
@@ -463,7 +468,10 @@ const att_calc = () => {
 } 
 
 const writeToFile = (obj) => {
-    var file = fs.createWriteStream('./uploads/Calc.csv');
+    //var file = fs.createWriteStream('./uploads/Calc.csv');
+    const calcPath = path.join(__dirname, 'uploads', 'Calc.csv');
+    var file = fs.createWriteStream(calcPath);
+    
     file.on('error', function(err) { });
     //file.write("EId,Day,Date,Log In,Log Out,Lunch In,Lunch Out,Total Hours\n");
     file.write("EId,Day,Date,Log In,Late Hours,Log Out,Total Hours, Total Days,OT Hours,Tiffen Cost\n");
