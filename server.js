@@ -318,14 +318,16 @@ fastify.get('/list', (request, reply) => {
   });
 });
 
-fastify.get('/download/e-data', async (request, reply) => {
+fastify.get('/view/e-data', async (request, reply) => {
   const filePath = path.join(__dirname, 'e_data.json');
 
   if (!fs.existsSync(filePath)) {
     return reply.code(404).send('File not found');
   }
 
-  return reply.download(filePath, 'e_data.json');
+  const fileContent = fs.readFileSync(filePath, 'utf8');
+  reply.header('Content-Type', 'application/json');
+  return fileContent;
 });
 
 fastify.get('/remove', (request, reply) => {
