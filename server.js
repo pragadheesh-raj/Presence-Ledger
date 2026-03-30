@@ -38,7 +38,7 @@ fastify.register(require("@fastify/view"), {
 
 fastify.register(require('@fastify/multipart'));
 
-fastify.post('/upload', async (request, reply) => {
+/*fastify.post('/upload', async (request, reply) => {
   jsonArray = [];
   start_date = '';
   end_date = '';
@@ -73,6 +73,61 @@ fastify.post('/upload', async (request, reply) => {
         console.log(`Parsed ${rowCount} rows`)
     });
   
+  return reply.view("/src/pages/success.hbs");
+});*/
+
+//Process File Upload
+fastify.post('/upload', async (request, reply) => {
+  jsonArray = [];
+  start_date = '';
+  end_date = '';
+
+  const data = await request.file();
+  const filePath = path.join(__dirname, 'uploads', 'ATT.csv');
+
+  if (!fs.existsSync(path.dirname(filePath))) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  }
+
+  await pump(data.file, fs.createWriteStream(filePath));
+
+  // ✅ WAIT for parsing + calculation to finish
+  await new Promise((resolve, reject) => {
+    fs.createReadStream(filePath)
+      .pipe(csv.parse({ headers: true }))
+      .on('error', reject)
+      .on('data', row => {
+        var temp = { '18':'','19':'','21':'','22':'','23':'','24':'' };
+
+        temp['18'] = row[' Employee Code '];
+        temp['19'] = row['Employee Name'];
+        temp['21'] = row['Category '];
+        temp['22'] = row['Date'];
+        temp['23'] = row[' In Time '] !== undefined
+          ? row[' In Time '].split(':').map(p => p.length === 1 ? '0' + p : p).join(':')
+          : '';
+        temp['24'] = row['Out Time '] !== undefined
+          ? row['Out Time '].split(':').map(p => p.length === 1 ? '0' + p : p).join(':')
+          : '';
+
+        jsonArray.push(temp);
+      })
+      
+      .on('end', rowCount => {
+        if (jsonArray.length === 0) {
+          return reject(new Error('No data in CSV'));
+        }
+
+        start_date = jsonArray[0]['22'];
+        end_date = jsonArray[jsonArray.length - 1]['22'];
+
+        att_calc(resolve);
+
+        console.log(`Parsed ${rowCount} rows`);
+        resolve();
+      });
+  });
+
   return reply.view("/src/pages/success.hbs");
 });
 
@@ -463,11 +518,74 @@ const att_calc = () => {
         obj[parseInt(item['18'])][i].w_day = calcWorkDay(obj[parseInt(item['18'])][i].hours,obj[parseInt(item['18'])][i].logIn);
     })
     
-    writeToFile(obj)
+    //writeToFile(obj)
+    writeToFile(obj, done); // ✅ pass callback
     //.log(Object.keys(obj).length)
 } 
 
-const writeToFile = (obj) => {
+const writeToFile = (obj, done) => {
+  const calcPath = path.join(__dirname, 'uploads', 'Calc.csv');
+  const file = fs.createWriteStream(calcPath);
+
+  file.on('error', function (err) {
+    console.error('File write error:', err);
+    done && done(err);
+  });
+
+  file.on('finish', function () {
+    console.log("File Write Completed");
+    done && done(); // ✅ signal upload route that we are done
+  });
+
+  file.write("EId,Day,Date,Log In,Late Hours,Log Out,Total Hours, Total Days,OT Hours,Tiffen Cost\n");
+
+  for (var keys in obj) {
+    var e = getEmployee(keys);
+
+    if (e != undefined) {
+      file.write("Employee Code & Name, " + keys + "," + e.e_name + "\n");
+    } else {
+      e = { g: "MALE" };
+      file.write("Employee Code & Name, " + keys + ",Name\n");
+    }
+
+    for (var i = 0; i < obj[keys].length; i++) {
+
+      obj[keys][i].tiffen = calcTiffen(obj[keys][i].ot_hours, e.g);
+
+      if (obj[keys][i].day == "Sun" && obj[keys][i].logIn == '') {
+        file.write(" ," + obj[keys][i].day + "," + obj[keys][i].date + ",Weekly Off\n");
+      } else {
+        file.write(
+          " ," + obj[keys][i].day + "," + obj[keys][i].date + "," +
+          (obj[keys][i].logIn == "" ? "" : date.transform(obj[keys][i].logIn, 'HH:mm:ss', 'HH:mm')) + "," +
+          (obj[keys][i].late_hours > 0 ? floatToTime(obj[keys][i].late_hours) : "") + "," +
+          (obj[keys][i].logOut == "" ? "" : date.transform(obj[keys][i].logOut, 'HH:mm:ss', 'HH:mm')) + "," +
+          formatTime(workingHours(obj[keys][i].hours)) + "," +
+          calcWorkDay(obj[keys][i].hours, obj[keys][i].logIn) + "," +
+          floatToTime(obj[keys][i].ot_hours) + "," +
+          obj[keys][i].tiffen + "\n"
+        );
+      }
+    }
+
+    file.write(
+      ",,,Total," +
+      cal_late_hours(obj[keys]) +
+      ",,," +
+      w_days(obj[keys]) +
+      "," +
+      cal_ot_days(obj[keys]) +
+      "," +
+      cal_total_tiffen(obj[keys]) +
+      "\n"
+    );
+  }
+
+  file.end(); // ✅ triggers 'finish'
+};
+
+/*const writeToFile = (obj) => {
     //var file = fs.createWriteStream('./uploads/Calc.csv');
     const calcPath = path.join(__dirname, 'uploads', 'Calc.csv');
     var file = fs.createWriteStream(calcPath);
@@ -505,7 +623,7 @@ const writeToFile = (obj) => {
     file.on('finish', function(){
       console.log("File Write Completed");
     })
-  }
+  }*/
 
 /*const getEmployee = (code) =>{
   return emp_data.find(obj => parseInt(obj.e_code) == code);
