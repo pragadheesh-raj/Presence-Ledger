@@ -318,6 +318,24 @@ fastify.get('/list', (request, reply) => {
   });
 });
 
+fastify.get('/download/e-data', async (request, reply) => {
+  try {
+    const filePath = path.join(__dirname, 'e_data.json');
+
+    if (!fs.existsSync(filePath)) {
+      return reply.code(404).send('e_data.json not found');
+    }
+
+    return reply
+      .header('Content-Type', 'application/json')
+      .header('Content-Disposition', 'attachment; filename="e_data.json"')
+      .send(fs.createReadStream(filePath));
+
+  } catch (err) {
+    console.error('Error downloading e_data.json:', err);
+    return reply.code(500).send('Failed to download file');
+  }
+});
 
 fastify.get('/remove', (request, reply) => {
   reply.view('/src/pages/remove.hbs');
